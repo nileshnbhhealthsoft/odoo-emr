@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="advanced_filter_engine.AdvancedFilterFavoriteItem">
+        <AccordionItem class="'o_advanced_filter_favorites text-truncate'" selected="hasFilters" description.translate="Advanced Filters">
+            <div class="o_afe_panel">
+                <div class="o_afe_header d-flex align-items-center gap-2">
+                    <div class="o_afe_title flex-grow-1 text-truncate">
+                        <span class="fw-semibold">Advanced Filters</span>
+                        <span class="text-muted text-truncate" t-esc="state.modelLabel || resModel"/>
+                    </div>
+                    <button class="btn btn-link btn-sm o_afe_refresh" type="button" title="Refresh filters" t-on-click.stop="loadFilters">
+                        <i class="fa fa-refresh"/>
+                    </button>
+                </div>
+
+                <div t-if="state.isLoading" class="o_afe_status text-muted">
+                    Loading filters...
+                </div>
+
+                <div t-elif="hasFilters" class="o_afe_filter_list">
+                    <div
+                        t-foreach="state.filters"
+                        t-as="filter"
+                        t-key="filter.id"
+                        class="o_afe_filter_item d-flex align-items-center"
+                    >
+                        <button
+                            type="button"
+                            class="o_afe_filter_button btn text-start flex-grow-1"
+                            t-on-click.stop="() => this.applyFilter(filter)"
+                            t-att-title="filter.name"
+                        >
+                            <i t-att-class="filter.is_default ? 'fa fa-star text-warning' : 'fa fa-sliders o_afe_filter_icon'"/>
+                            <span class="o_afe_filter_name text-truncate" t-esc="filter.name"/>
+                            <span t-if="filter.is_shared" class="o_afe_shared text-muted">Shared</span>
+                        </button>
+                        <button
+                            type="button"
+                            class="o_afe_row_action btn"
+                            title="Edit"
+                            t-on-click.stop="() => this.editFilter(filter)"
+                        >
+                            <i class="fa fa-pencil"/>
+                        </button>
+                        <button
+                            t-if="filter.is_owner"
+                            type="button"
+                            class="o_afe_row_action btn"
+                            title="Delete"
+                            t-on-click.stop="() => this.deleteFilter(filter)"
+                        >
+                            <i class="fa fa-trash"/>
+                        </button>
+                    </div>
+                </div>
+
+                <div t-else="" class="o_afe_status text-muted">
+                    No advanced filters saved for this model.
+                </div>
+
+                <div class="o_afe_footer">
+                    <button class="btn btn-primary btn-sm w-100" type="button" t-on-click.stop="createFilter">
+                        New Advanced Filter
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm w-100" type="button" t-on-click.stop="openManager">
+                        Manage Advanced Filters
+                    </button>
+                </div>
+            </div>
+        </AccordionItem>
+    </t>
+</templates>

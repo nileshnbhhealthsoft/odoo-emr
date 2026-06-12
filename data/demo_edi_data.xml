@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Minimal client-requested relational test data:
+         Claim A has well_visit + sick_visit, Claim B only well_visit, Claim C only sick_visit. -->
+    <record id="demo_claim_a" model="edi.claim">
+        <field name="claim_number">Claim A</field>
+        <field name="name">Claim A</field>
+        <field name="patient_control_number">TEST-A</field>
+        <field name="payer_name">CareSource</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Both</field>
+        <field name="patient_dob">1990-01-01</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="service_date">2025-01-10</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="charge_amount">200.00</field>
+        <field name="payment_amount">100.00</field>
+        <field name="total_payment_amount">100.00</field>
+    </record>
+
+    <record id="demo_claim_b" model="edi.claim">
+        <field name="claim_number">Claim B</field>
+        <field name="name">Claim B</field>
+        <field name="patient_control_number">TEST-B</field>
+        <field name="payer_name">CareSource</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Well Only</field>
+        <field name="patient_dob">1991-01-01</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="service_date">2025-01-11</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="charge_amount">100.00</field>
+        <field name="payment_amount">50.00</field>
+        <field name="total_payment_amount">50.00</field>
+    </record>
+
+    <record id="demo_claim_c" model="edi.claim">
+        <field name="claim_number">Claim C</field>
+        <field name="name">Claim C</field>
+        <field name="patient_control_number">TEST-C</field>
+        <field name="payer_name">CareSource</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Sick Only</field>
+        <field name="patient_dob">1992-01-01</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="service_date">2025-01-12</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="charge_amount">100.00</field>
+        <field name="payment_amount">50.00</field>
+        <field name="total_payment_amount">50.00</field>
+    </record>
+
+    <record id="demo_service_claim_a_well" model="edi.service">
+        <field name="claim_id" ref="demo_claim_a"/>
+        <field name="line_no">1</field>
+        <field name="date_start">2025-01-10</field>
+        <field name="date_end">2025-01-10</field>
+        <field name="patient_control_number">TEST-A</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Both</field>
+        <field name="patient_dob">1990-01-01</field>
+        <field name="payer_name">CareSource</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="claim_payment_amount">100.00</field>
+        <field name="claim_charge_amount">200.00</field>
+        <field name="cpt_code">WELL</field>
+        <field name="cpt_type">well_visit</field>
+        <field name="service_description">Well Visit</field>
+        <field name="charge_amount">100.00</field>
+        <field name="paid_amount">50.00</field>
+    </record>
+
+    <record id="demo_service_claim_a_sick" model="edi.service">
+        <field name="claim_id" ref="demo_claim_a"/>
+        <field name="line_no">2</field>
+        <field name="date_start">2025-01-10</field>
+        <field name="date_end">2025-01-10</field>
+        <field name="patient_control_number">TEST-A</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Both</field>
+        <field name="patient_dob">1990-01-01</field>
+        <field name="payer_name">CareSource</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="claim_payment_amount">100.00</field>
+        <field name="claim_charge_amount">200.00</field>
+        <field name="cpt_code">SICK</field>
+        <field name="cpt_type">sick_visit</field>
+        <field name="service_description">Sick Visit</field>
+        <field name="charge_amount">100.00</field>
+        <field name="paid_amount">50.00</field>
+    </record>
+
+    <record id="demo_service_claim_b_well" model="edi.service">
+        <field name="claim_id" ref="demo_claim_b"/>
+        <field name="line_no">1</field>
+        <field name="date_start">2025-01-11</field>
+        <field name="date_end">2025-01-11</field>
+        <field name="patient_control_number">TEST-B</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Well Only</field>
+        <field name="patient_dob">1991-01-01</field>
+        <field name="payer_name">CareSource</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="claim_payment_amount">50.00</field>
+        <field name="claim_charge_amount">100.00</field>
+        <field name="cpt_code">WELL</field>
+        <field name="cpt_type">well_visit</field>
+        <field name="service_description">Well Visit</field>
+        <field name="charge_amount">100.00</field>
+        <field name="paid_amount">50.00</field>
+    </record>
+
+    <record id="demo_service_claim_c_sick" model="edi.service">
+        <field name="claim_id" ref="demo_claim_c"/>
+        <field name="line_no">1</field>
+        <field name="date_start">2025-01-12</field>
+        <field name="date_end">2025-01-12</field>
+        <field name="patient_control_number">TEST-C</field>
+        <field name="patient_first_name">Test</field>
+        <field name="patient_last_name">Sick Only</field>
+        <field name="patient_dob">1992-01-01</field>
+        <field name="payer_name">CareSource</field>
+        <field name="service_provider_last_name">Demo Provider</field>
+        <field name="claim_status_text">Paid</field>
+        <field name="claim_payment_amount">50.00</field>
+        <field name="claim_charge_amount">100.00</field>
+        <field name="cpt_code">SICK</field>
+        <field name="cpt_type">sick_visit</field>
+        <field name="service_description">Sick Visit</field>
+        <field name="charge_amount">100.00</field>
+        <field name="paid_amount">50.00</field>
+    </record>
+</odoo>
