@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_advanced_filter_user,advanced.filter user,model_advanced_filter,base.group_user,1,1,1,1
+access_advanced_filter_manager,advanced.filter manager,model_advanced_filter,base.group_system,1,1,1,1
+access_advanced_filter_comment_user,advanced.filter.comment user,model_advanced_filter_comment,base.group_user,1,1,1,0
+access_advanced_filter_line_user,advanced.filter.line user,model_advanced_filter_line,base.group_user,1,1,1,1
+access_advanced_filter_group_by_user,advanced.filter.group.by user,model_advanced_filter_group_by,base.group_user,1,1,1,1
+access_advanced_filter_duplicate_group_by_user,advanced.filter.duplicate.group.by user,model_advanced_filter_duplicate_group_by,base.group_user,1,1,1,1
+access_data_filter_wizard_user,data.filter.wizard user,model_data_filter_wizard,base.group_user,1,1,1,1

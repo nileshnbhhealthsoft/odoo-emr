@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_edi_claim_list" model="ir.ui.view">
+        <field name="name">edi.claim.list</field>
+        <field name="model">edi.claim</field>
+        <field name="arch" type="xml">
+            <list string="Claims">
+                <field name="source_id"/>
+                <field name="claim_number"/>
+                <field name="patient_control_number"/>
+                <field name="payer_name"/>
+                <field name="payer_type"/>
+                <field name="service_date"/>
+                <field name="payment_date"/>
+                <field name="service_provider_last_name"/>
+                <field name="claim_status_text"/>
+                <field name="charge_amount"/>
+                <field name="payment_amount"/>
+                <field name="payment_percentage"/>
+                <field name="services_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_edi_claim_form" model="ir.ui.view">
+        <field name="name">edi.claim.form</field>
+        <field name="model">edi.claim</field>
+        <field name="arch" type="xml">
+            <form string="Claim">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="source_id" readonly="1"/>
+                            <field name="claim_number"/>
+                            <field name="payer_control_number"/>
+                            <field name="patient_control_number"/>
+                            <field name="payer_name"/>
+                            <field name="payer_type"/>
+                        </group>
+                        <group>
+                            <field name="service_date"/>
+                            <field name="payment_date"/>
+                            <field name="production_date"/>
+                            <field name="service_provider_identifier"/>
+                            <field name="service_provider_last_name"/>
+                            <field name="service_provider_first_name"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="charge_amount"/>
+                            <field name="payment_amount"/>
+                            <field name="total_payment_amount"/>
+                            <field name="net_paid_pct"/>
+                            <field name="payment_percentage"/>
+                        </group>
+                        <group>
+                            <field name="claim_status_text"/>
+                            <field name="facility_type"/>
+                            <field name="frequency_type"/>
+                            <field name="patient_age_years"/>
+                            <field name="patient_age_months"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="diagnosis_codes"/>
+                    </group>
+                    <notebook>
+                        <page string="Services">
+                            <field name="service_ids">
+                                <list>
+                                    <field name="line_no"/>
+                                    <field name="date_start"/>
+                                    <field name="cpt_code"/>
+                                    <field name="cpt_type"/>
+                                    <field name="charge_amount"/>
+                                    <field name="paid_amount"/>
+                                    <field name="icd_10_codes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_edi_claim_search" model="ir.ui.view">
+        <field name="name">edi.claim.search</field>
+        <field name="model">edi.claim</field>
+        <field name="arch" type="xml">
+            <search string="Claims">
+                <field name="claim_number"/>
+                <field name="patient_control_number"/>
+                <field name="payer_name"/>
+                <field name="payer_type"/>
+                <field name="service_provider_last_name"/>
+                <filter name="paid" string="Paid" domain="[('payment_amount', '&gt;', 0)]"/>
+                <filter name="zero_payment" string="Zero Payment" domain="[('payment_amount', '=', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_payer" string="Payer" context="{'group_by': 'payer_name'}"/>
+                    <filter name="group_by_type" string="Payer Type" context="{'group_by': 'payer_type'}"/>
+                    <filter name="group_by_service_month" string="Service Month" context="{'group_by': 'service_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_edi_service_list" model="ir.ui.view">
+        <field name="name">edi.service.list</field>
+        <field name="model">edi.service</field>
+        <field name="arch" type="xml">
+            <list string="Services">
+                <field name="claim_id"/>
+                <field name="line_no"/>
+                <field name="patient_control_number"/>
+                <field name="payer_name"/>
+                <field name="payer_type"/>
+                <field name="date_start"/>
+                <field name="cpt_code"/>
+                <field name="cpt_type"/>
+                <field name="charge_amount"/>
+                <field name="paid_amount"/>
+                <field name="claim_payment_amount"/>
+                <field name="payment_percentage"/>
+                <field name="icd_10_codes"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_edi_service_search" model="ir.ui.view">
+        <field name="name">edi.service.search</field>
+        <field name="model">edi.service</field>
+        <field name="arch" type="xml">
+            <search string="Services">
+                <field name="claim_id"/>
+                <field name="patient_control_number"/>
+                <field name="payer_name"/>
+                <field name="cpt_code"/>
+                <field name="cpt_type"/>
+                <field name="icd_10_codes"/>
+                <filter name="paid" string="Paid" domain="[('paid_amount', '&gt;', 0)]"/>
+                <filter name="unpaid" string="Unpaid" domain="[('paid_amount', '=', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_claim" string="Claim" context="{'group_by': 'claim_id'}"/>
+                    <filter name="group_by_cpt_type" string="CPT Type" context="{'group_by': 'cpt_type'}"/>
+                    <filter name="group_by_service_month" string="Service Month" context="{'group_by': 'date_start:month'}"/>
+                    <filter name="group_by_payer" string="Payer" context="{'group_by': 'payer_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_edi_claim" model="ir.actions.act_window">
+        <field name="name">Claims</field>
+        <field name="res_model">edi.claim</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_edi_claim_search"/>
+    </record>
+
+    <record id="action_edi_service" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">edi.service</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_edi_service_search"/>
+    </record>
+
+    <menuitem id="menu_edi_claim"
+              name="Claims"
+              parent="advanced_filter_engine.menu_advanced_filter_root"
+              action="action_edi_claim"
+              sequence="30"/>
+
+    <menuitem id="menu_edi_service"
+              name="Services"
+              parent="advanced_filter_engine.menu_advanced_filter_root"
+              action="action_edi_service"
+              sequence="40"/>
+</odoo>

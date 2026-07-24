@@ -1,35 +1,43 @@
-from __future__ import print_function
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 import sys
-import os
-from os.path import join as joinpath, isdir
+import traceback
+from pathlib import Path
 
 import odoo
-from odoo.modules import get_modules, get_module_path
+from odoo.modules import get_module_path, get_modules, initialize_sys_path
 
 commands = {}
+class Command:  # noqa: E302
+    name = None
 
-class CommandType(type):
-    def __init__(cls, name, bases, attrs):
-        super(CommandType, cls).__init__(name, bases, attrs)
-        name = getattr(cls, name, cls.__name__.lower())
-        cls.name = name
-        if name != 'command':
-            commands[name] = cls
+    def __init_subclass__(cls):
+        cls.name = cls.name or cls.__name__.lower()
+        commands[cls.name] = cls
 
-Command = CommandType('Command', (object,), {'run': lambda self, args: None})
+
+ODOO_HELP = """\
+Odoo CLI, use '{odoo_bin} --help' for regular server options.
+
+Available commands:
+    {command_list}
+
+Use '{odoo_bin} <command> --help' for individual command help."""
+
 
 class Help(Command):
-    """Display the list of available commands"""
+    """ Display the list of available commands """
     def run(self, args):
-        print("Available commands:\n")
-        names = list(commands)
-        padding = max([len(k) for k in names]) + 2
-        for k in sorted(names):
-            name = k.ljust(padding, ' ')
-            doc = (commands[k].__doc__ or '').strip()
-            print("    %s%s" % (name, doc))
-        print("\nUse '%s <command> --help' for individual command help." % sys.argv[0].split(os.path.sep)[-1])
+        padding = max(len(cmd) for cmd in commands) + 2
+        command_list = "\n    ".join([
+            "    {}{}".format(name.ljust(padding), (command.__doc__ or "").strip())
+            for name, command in sorted(commands.items())
+        ])
+        print(ODOO_HELP.format(  # noqa: T201
+            odoo_bin=Path(sys.argv[0]).name,
+            command_list=command_list,
+        ))
+
 
 def main():
     args = sys.argv[1:]
@@ -48,15 +56,23 @@ def main():
     # Subcommand discovery
     if len(args) and not args[0].startswith("-"):
         logging.disable(logging.CRITICAL)
+        initialize_sys_path()
         for module in get_modules():
-            if isdir(joinpath(get_module_path(module), 'cli')):
-                __import__('odoo.addons.' + module)
+            if (Path(get_module_path(module)) / 'cli').is_dir():
+                try:
+                    __import__('odoo.addons.' + module)
+                except Exception:  # noqa: BLE001
+                    print("Failed to scan module", module, file=sys.stderr)  # noqa: T201
+                    if module == 'hw_drivers':
+                        print("maybe a git clean -df addons/ can fix the problem", file=sys.stderr)  # noqa: T201
+                    traceback.print_exc()
         logging.disable(logging.NOTSET)
         command = args[0]
         args = args[1:]
 
     if command in commands:
         o = commands[command]()
+        odoo.cli.COMMAND = command
         o.run(args)
     else:
-        sys.exit('Unknow command %r' % (command,))
+        sys.exit('Unknown command %r' % (command,))

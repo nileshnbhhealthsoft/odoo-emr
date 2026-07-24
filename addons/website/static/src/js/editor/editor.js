@@ -1,23 +1,29 @@
-odoo.define('website.editor', function (require) {
-'use strict';
+/** @odoo-module **/
 
-var widget = require('web_editor.widget');
-var wUtils = require('website.utils');
+import { LinkDialog } from "@web_editor/js/wysiwyg/widgets/link_dialog";
+import { patch } from "@web/core/utils/patch";
+import wUtils from "@website/js/utils";
+import { useEffect } from '@odoo/owl';
 
-widget.LinkDialog.include({
-
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-
+patch(LinkDialog.prototype, {
     /**
      * Allows the URL input to propose existing website pages.
      *
      * @override
      */
-    bind_data: function () {
-        wUtils.autocompleteWithPages(this, this.$('#o_link_dialog_url_input'));
-        return this._super.apply(this, arguments);
-    },
-});
+    setup() {
+        super.setup();
+        useEffect(($link, container) => {
+            const input = container?.querySelector(`input[name="url"]`);
+            if (!input) {
+                return;
+            }
+            const options = {
+                body: $link && $link[0].ownerDocument.body,
+                urlChosen: () => this.__onURLInput(),
+            };
+            const unmountAutocompleteWithPages = wUtils.autocompleteWithPages(input, options);
+            return () => unmountAutocompleteWithPages();
+        }, () => [this.$link, this.linkComponentWrapperRef.el]);
+    }
 });

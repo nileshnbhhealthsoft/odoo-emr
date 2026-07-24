@@ -3,11 +3,9 @@
     'name': "Test Performance",
     'version': "1.0",
     'category': "Hidden",
-    'depends': ['base', 'mail'],
+    'depends': ['base'],
     'data': [
         'security/ir.model.access.csv',
     ],
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'license': 'LGPL-3',
 }
