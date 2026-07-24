@@ -1,26 +1,37 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.http import request
-from odoo.tools.pycompat import izip
+from odoo import _
+from odoo.exceptions import AccessError, ValidationError
+from odoo.http import Controller, request, route
+from odoo.tools.mail import email_re
 
-class WebsiteSale(WebsiteSale):
 
-    def get_attribute_value_ids(self, product):
-        res = super(WebsiteSale, self).get_attribute_value_ids(product)
-        variant_ids = [r[0] for r in res]
-        # recordsets conserve the order
-        for r, variant in izip(res, request.env['product.product'].sudo().browse(variant_ids)):
-            r.extend([{
-                'virtual_available': variant.virtual_available,
-                'product_type': str(variant.type),
-                'inventory_availability': str(variant.inventory_availability),
-                'available_threshold': variant.available_threshold,
-                'custom_message': str(variant.custom_message),
-                'product_template': variant.product_tmpl_id.id,
-                'cart_qty': variant.cart_qty,
-                'uom_name': str(variant.uom_id.name),
-            }])
+class WebsiteSaleStock(Controller):
 
-        return res
+    @route('/shop/add/stock_notification', type='json', auth='public', website=True)
+    def add_stock_email_notification(self, email, product_id):
+        if not email_re.match(email):
+            raise ValidationError(_("Invalid Email"))
+
+        product = request.env['product.product'].browse(int(product_id))
+
+        # check if product available
+        if not product.exists() or not product._can_add_to_stock_notifications():
+            raise ValidationError(_("This product is not eligible for stock notifications."))
+
+        partners = request.env['res.partner'].sudo()._mail_find_partner_from_emails([email], force_create=True)
+        partner = partners[0]
+
+        is_public_user = request.website.is_public_user()
+        if is_public_user and partner.user_ids.exists():
+            raise AccessError(_("Please sign in to proceed."))
+
+        if not product._has_stock_notification(partner):
+            product.sudo().stock_notification_partner_ids += partner
+
+        if is_public_user:
+            request.session['product_with_stock_notification_enabled'] = list(
+                set(request.session.get('product_with_stock_notification_enabled', []))
+                | {product_id}
+            )
+            request.session['stock_notification_email'] = email

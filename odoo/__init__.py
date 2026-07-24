@@ -1,50 +1,31 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E402, F401
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 """ OpenERP core library."""
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # odoo must be a namespace package for odoo.addons to become one too
 # https://packaging.python.org/guides/packaging-namespace-packages/
-#----------------------------------------------------------
-__path__ = __import__('pkgutil').extend_path(__path__, __name__)
+# ----------------------------------------------------------
+import pkgutil
+import os.path
+__path__ = [
+    os.path.abspath(path)
+    for path in pkgutil.extend_path(__path__, __name__)
+]
 
-#----------------------------------------------------------
-# Running mode flags (gevent, prefork)
-#----------------------------------------------------------
-# Is the server running with gevent.
 import sys
-evented = False
-if len(sys.argv) > 1 and sys.argv[1] == 'gevent':
-    sys.argv.remove('gevent')
-    import gevent.monkey
-    gevent.monkey.patch_all()
-    import psycogreen.gevent
-    psycogreen.gevent.patch_psycopg()
-    evented = True
+MIN_PY_VERSION = (3, 10)
+MAX_PY_VERSION = (3, 14)
+assert sys.version_info > MIN_PY_VERSION, f"Outdated python version detected, Odoo requires Python >= {'.'.join(map(str, MIN_PY_VERSION))} to run."
 
-# Is the server running in prefork mode (e.g. behind Gunicorn).
-# If this is True, the processes have to communicate some events,
-# e.g. database update or cache invalidation. Each process has also
-# its own copy of the data structure and we don't need to care about
-# locks between threads.
-multi_process = False
-
-#----------------------------------------------------------
-# libc UTC hack
-#----------------------------------------------------------
-# Make sure the OpenERP server runs in UTC.
-import os
-os.environ['TZ'] = 'UTC' # Set the timezone
-import time
-if hasattr(time, 'tzset'):
-    time.tzset()
-
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # Shortcuts
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # The hard-coded super-user id (a.k.a. administrator, or root user).
 SUPERUSER_ID = 1
+
 
 def registry(database_name=None):
     """
@@ -52,14 +33,26 @@ def registry(database_name=None):
     on the current thread. If the registry does not exist yet, it is created on
     the fly.
     """
+    import warnings  # noqa: PLC0415
+    warnings.warn("Use directly odoo.modules.registry.Registry", DeprecationWarning, 2)
     if database_name is None:
         import threading
-        database_name = threading.currentThread().dbname
+        database_name = threading.current_thread().dbname
     return modules.registry.Registry(database_name)
 
-#----------------------------------------------------------
+
+# ----------------------------------------------------------
+# Import tools to patch code and libraries
+# required to do as early as possible for evented and timezone
+# ----------------------------------------------------------
+from . import _monkeypatches
+_monkeypatches.patch_all()
+
+
+# ----------------------------------------------------------
 # Imports
-#----------------------------------------------------------
+# ----------------------------------------------------------
+from . import upgrade  # this namespace must be imported first
 from . import addons
 from . import conf
 from . import loglevels
@@ -71,16 +64,17 @@ from . import service
 from . import sql_db
 from . import tools
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # Model classes, fields, api decorators, and translations
-#----------------------------------------------------------
+# ----------------------------------------------------------
 from . import models
 from . import fields
 from . import api
-from odoo.tools.translate import _
+from odoo.tools.translate import _, _lt
+from odoo.fields import Command
 
-#----------------------------------------------------------
+# ----------------------------------------------------------
 # Other imports, which may require stuff from above
-#----------------------------------------------------------
+# ----------------------------------------------------------
 from . import cli
 from . import http

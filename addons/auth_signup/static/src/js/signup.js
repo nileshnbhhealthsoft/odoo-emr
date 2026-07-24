@@ -1,16 +1,26 @@
-odoo.define('auth_signup.signup', function (require) {
-    'use strict';
+/** @odoo-module **/
 
-var base = require('web_editor.base');
+import publicWidget from "@web/legacy/js/public/public_widget";
 
-base.ready().then(function() {
-    // Disable 'Sign Up' button to prevent user form continuous clicking
-    if ($('.oe_signup_form').length > 0) {
-        $('.oe_signup_form').on('submit', function () {
-            $('.o_signup_btn').attr('disabled', 'disabled');
-            $('.o_signup_btn').prepend('<i class="fa fa-refresh fa-spin"/> ');
-        });
-    }
-});
+publicWidget.registry.SignUpForm = publicWidget.Widget.extend({
+    selector: '.oe_signup_form',
+    events: {
+        'submit': '_onSubmit',
+    },
 
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * @private
+     */
+    _onSubmit: function () {
+        var $btn = this.$('.oe_login_buttons > button[type="submit"]');
+        if ($btn.prop("disabled")) {
+            return;
+        }
+        $btn.attr('disabled', 'disabled');
+        $btn.prepend('<i class="fa fa-refresh fa-spin"/> ');
+    },
 });

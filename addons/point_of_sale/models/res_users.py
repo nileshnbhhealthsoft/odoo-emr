@@ -1,15 +1,24 @@
-# -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo import models, api
 
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    pos_security_pin = fields.Char(string='Security PIN', size=32, help='A Security PIN used to protect sensible functionality in the Point of Sale')
+    @api.model
+    def _load_pos_data_domain(self, data):
+        return [('id', '=', self.env.uid)]
 
-    @api.constrains('pos_security_pin')
-    def _check_pin(self):
-        if self.pos_security_pin and not self.pos_security_pin.isdigit():
-            raise UserError(_("Security PIN can only contain digits"))
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        return ['id', 'name', 'partner_id', 'groups_id']
+
+    def _load_pos_data(self, data):
+        domain = self._load_pos_data_domain(data)
+        fields = self._load_pos_data_fields(data['pos.config']['data'][0]['id'])
+        user = self.search_read(domain, fields, load=False)
+        user[0]['role'] = 'manager' if data['pos.config']['data'][0]['group_pos_manager_id'] in user[0]['groups_id'] else 'cashier'
+        del user[0]['groups_id']
+        return {
+            'data': user,
+            'fields': fields,
+        }
