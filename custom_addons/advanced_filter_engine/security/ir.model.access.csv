@@ -6,3 +6,5 @@ access_advanced_filter_line_user,advanced.filter.line user,model_advanced_filter
 access_advanced_filter_group_by_user,advanced.filter.group.by user,model_advanced_filter_group_by,base.group_user,1,1,1,1
 access_advanced_filter_duplicate_group_by_user,advanced.filter.duplicate.group.by user,model_advanced_filter_duplicate_group_by,base.group_user,1,1,1,1
 access_data_filter_wizard_user,data.filter.wizard user,model_data_filter_wizard,base.group_user,1,1,1,1
+access_edi_claim_user,EDI Claim User,model_edi_claim,base.group_user,1,1,1,1
+access_edi_service_user,EDI Service User,model_edi_service,base.group_user,1,1,1,1

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <!-- Claim List View -->
+    <record id="view_edi_claim_list" model="ir.ui.view">
+        <field name="name">edi.claim.list</field>
+        <field name="model">edi.claim</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="id"/>
+                <field name="claim_number"/>
+                <field name="payer_control_number"/>
+                <field name="patient_control_number"/>
+                <field name="service_date"/>
+                <field name="payment_date"/>
+                <field name="production_date"/>
+                <field name="charge_amount"/>
+                <field name="payment_amount"/>
+                <field name="total_payment_amount"/>
+                <field name="net_paid_pct"/>
+                <field name="payment_percentage"/>
+                <field name="fully_paid_tolerance"/>
+                <field name="claim_status_text"/>
+                <field name="facility_type"/>
+                <field name="frequency_type"/>
+                <field name="transaction_control_number"/>
+                <field name="check_eft_trace_number"/>
+                <field name="payer_name"/>
+                <field name="payer_type"/>
+                <field name="service_provider_identifier"/>
+                <field name="service_provider_last_name"/>
+                <field name="service_provider_first_name"/>
+                <field name="services_count"/>
+                <field name="patient_age_years"/>
+                <field name="patient_age_months"/>
+                <field name="diagnosis_codes"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- Claim Form View -->
+    <record id="view_edi_claim_form" model="ir.ui.view">
+        <field name="name">edi.claim.form</field>
+        <field name="model">edi.claim</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="claim_number"/>
+                            <field name="payer_control_number"/>
+                            <field name="patient_control_number"/>
+                        </group>
+
+                        <group>
+                            <field name="service_date"/>
+                            <field name="payment_date"/>
+                            <field name="production_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment">
+                        <field name="charge_amount"/>
+                        <field name="payment_amount"/>
+                        <field name="total_payment_amount"/>
+                        <field name="payment_percentage"/>
+                    </group>
+
+                    <group string="Payer">
+                        <field name="payer_name"/>
+                        <field name="payer_type"/>
+                    </group>
+
+                    <group string="Provider">
+                        <field name="service_provider_identifier"/>
+                        <field name="service_provider_last_name"/>
+                        <field name="service_provider_first_name"/>
+                    </group>
+
+                    <group string="Patient">
+                        <field name="patient_age_years"/>
+                        <field name="patient_age_months"/>
+                    </group>
+
+                    <group string="Diagnosis">
+                        <field name="diagnosis_codes"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Claim Action -->
+    <record id="action_edi_claim" model="ir.actions.act_window">
+        <field name="name">EDI Claims</field>
+        <field name="res_model">edi.claim</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- EDI Root Menu -->
+    <menuitem
+        id="menu_edi_root"
+        name="EDI"
+        sequence="10"
+    />
+
+
+    <!-- Claim Menu -->
+    <menuitem
+        id="menu_edi_claim"
+        name="Claims"
+        parent="menu_edi_root"
+        action="action_edi_claim"
+        sequence="10"
+    />
+
+</odoo>

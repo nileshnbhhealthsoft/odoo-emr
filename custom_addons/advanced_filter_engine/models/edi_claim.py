@@ -6,7 +6,6 @@ class EdiClaim(models.Model):
     _description = "EDI Claim (835)"
     _rec_name = "claim_number"
 
-    source_id = fields.Integer(index=True, readonly=True)
     claim_number = fields.Char(index=True)
     payer_control_number = fields.Char(index=True)
     patient_control_number = fields.Char(index=True)
