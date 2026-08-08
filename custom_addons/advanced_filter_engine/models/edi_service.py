@@ -6,7 +6,6 @@ class EdiService(models.Model):
     _description = "EDI Service Line (835)"
     _rec_name = "cpt_code"
 
-    source_claim_id = fields.Integer(index=True, readonly=True)
     claim_id = fields.Many2one("edi.claim", ondelete="cascade", index=True)
 
     line_no = fields.Integer()
