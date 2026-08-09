@@ -36,6 +36,7 @@ const OPERATOR_DESCRIPTIONS = {
 
     starts_with: _t("starts with"),
     ends_with: _t("ends with"),
+    primary_icd10: _t("Primary (1st code)"),
 
     // virtual operator (equivalent to a couple (>=,<=))
     between: _t("is between"),

@@ -118,6 +118,22 @@ function getPartialValueEditorInfo(fieldDef, operator, params = {}) {
                 isSupported: (value) => value === false,
                 defaultValue: () => false,
             };
+        case "primary_icd10":
+            return {
+                component: Input,
+                extractProps: ({ value, update }) => ({
+                    value: typeof value === "string" && value.startsWith("1: ")
+                        ? value.slice(3)
+                        : (typeof value === "string" ? value : ""),
+                    update: (code) => update(code.trim() ? `1: ${code.trim()}` : ""),
+                }),
+                isSupported: (value) => typeof value === "string",
+                defaultValue: () => "",
+                stringify: (value) =>
+                    typeof value === "string" && value.startsWith("1: ")
+                        ? value.slice(3)
+                        : value || "",
+            };
         case "=like":
         case "=ilike":
         case "like":

@@ -22,8 +22,8 @@ export function getDomainDisplayedOperators(fieldDef, params = {}) {
             return ["=", "!=", "in", "not in", "set", "not_set"];
         case "char":
         case "text":
-        case "html":
-            return [
+        case "html": {
+            const ops = [
                 "=",
                 "!=",
                 "ilike",
@@ -35,6 +35,11 @@ export function getDomainDisplayedOperators(fieldDef, params = {}) {
                 "starts_with",
                 "ends_with",
             ];
+            if (fieldDef && fieldDef.name === "icd_10_codes") {
+                return ["primary_icd10", ...ops];
+            }
+            return ops;
+        }
         case "date":
         case "datetime":
             return [
@@ -84,7 +89,9 @@ export function getDomainDisplayedOperators(fieldDef, params = {}) {
                 "not any",
             ];
         case "json":
-            return ["=", "!=", "ilike", "not ilike", "set", "not_set"];
+            return fieldDef && fieldDef.name === "icd_10"
+                ? ["primary_icd10", "=", "!=", "ilike", "not ilike", "set", "not_set"]
+                : ["=", "!=", "ilike", "not ilike", "set", "not_set"];
         case "binary":
         case "properties":
             return ["set", "not_set"];
