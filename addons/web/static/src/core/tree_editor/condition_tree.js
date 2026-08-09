@@ -959,6 +959,11 @@ export function removeWithinOperators(tree) {
 export function createVirtualOperators(tree, options = {}) {
     if (tree.type === "condition") {
         const { path, operator, value } = tree;
+        console.log("path path ",path)
+        if (operator === "ilike" && typeof path === "string" && path === "icd_10_codes" &&
+            typeof value === "string" && value.startsWith("1: ")) {
+            return { ...tree, operator: "primary_icd10" };
+        }
         if (["=", "!="].includes(operator)) {
             const fieldDef = options.getFieldDef?.(path) || null;
             if (fieldDef) {
@@ -1008,6 +1013,9 @@ export function removeVirtualOperators(tree) {
                 value: operator === "starts_with" ? `${value}%` : `%${value}`,
                 operator: "=ilike",
             };
+        }
+        if (operator === "primary_icd10") {
+            return { ...tree, path: "icd_10_codes", operator: "ilike" };
         }
         return tree;
     }
